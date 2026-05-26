@@ -14,15 +14,40 @@ const SectionSchema = new mongoose.Schema({
 
 const AssignmentSchema = new mongoose.Schema(
   {
-    title: String,
-    dueDate: Date,
+    title: {
+      type: String,
+      required: true,
+    },
+    dueDate: {
+      type: Date,
+      required: true,
+    },
+    questionTypes: [
+      {
+        type: String,
+      },
+    ],
+    totalQuestions: {
+      type: Number,
+      required: true,
+    },
+    totalMarks: {
+      type: Number,
+      required: true,
+    },
     instructions: String,
+    uploadedFile: String,
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     status: {
       type: String,
       enum: ["queued", "processing", "completed", "failed"],
       default: "queued",
     },
     generatedPaper: [SectionSchema],
+    error: String,
   },
   {
     timestamps: true,

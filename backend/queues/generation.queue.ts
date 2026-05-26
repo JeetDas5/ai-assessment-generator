@@ -4,6 +4,6 @@ import { redisConnection } from "../config/redis";
 export const generationQueue = new Queue(
   "assessment-generation",
   {
-    connection: redisConnection,
+    connection: redisConnection as any,
   }
 );

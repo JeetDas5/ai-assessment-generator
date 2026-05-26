@@ -1,21 +1,65 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import { AuthRequest } from "../middleware/auth.middleware";
 import Assignment from "../models/assignment.model";
 import { assignmentSchema } from "../validations/assignment.validation";
 import { generationQueue } from "../queues/generation.queue";
 
-export const createAssignment = async (req: Request, res: Response) => {
+export const createAssignment = async (req: AuthRequest, res: Response) => {
   try {
-    const parsedData = assignmentSchema.parse({
-      ...req.body,
-      totalQuestions: Number(req.body.totalQuestions),
-      totalMarks: Number(req.body.totalMarks),
-      questionTypes: JSON.parse(req.body.questionTypes),
-    });
+    // Parse questionTypes robustly
+    let rawQuestionTypes = req.body.questionTypes;
+    let parsedQuestionTypes: any = [];
+    if (rawQuestionTypes) {
+      if (Array.isArray(rawQuestionTypes)) {
+        parsedQuestionTypes = rawQuestionTypes;
+      } else if (typeof rawQuestionTypes === "string") {
+        try {
+          const parsed = JSON.parse(rawQuestionTypes);
+          parsedQuestionTypes = Array.isArray(parsed) ? parsed : [parsed];
+        } catch {
+          parsedQuestionTypes = [rawQuestionTypes];
+        }
+      }
+    }
 
-    const assignment = await Assignment.create({
-      ...parsedData,
-      uploadedFile: req.file?.path,
-    });
+    const validationInput = {
+      ...req.body,
+      totalQuestions: req.body.totalQuestions !== undefined ? Number(req.body.totalQuestions) : undefined,
+      totalMarks: req.body.totalMarks !== undefined ? Number(req.body.totalMarks) : undefined,
+      questionTypes: parsedQuestionTypes,
+    };
+
+    const validationResult = assignmentSchema.safeParse(validationInput);
+    if (!validationResult.success) {
+      res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: validationResult.error.flatten().fieldErrors,
+      });
+      return;
+    }
+
+    const parsedData = validationResult.data;
+
+    const createData: any = {
+      title: parsedData.title,
+      dueDate: parsedData.dueDate,
+      questionTypes: parsedData.questionTypes,
+      totalQuestions: parsedData.totalQuestions,
+      totalMarks: parsedData.totalMarks,
+    };
+
+    if (parsedData.instructions !== undefined) {
+      createData.instructions = parsedData.instructions;
+    }
+    if (req.file?.path !== undefined) {
+      createData.uploadedFile = req.file.path;
+    }
+    if (req.user?.id !== undefined) {
+      createData.createdBy = req.user.id;
+    }
+
+    const assignment = await Assignment.create(createData);
 
     const job = await generationQueue.add("generate-paper", {
       assignmentId: assignment._id,
@@ -23,15 +67,16 @@ export const createAssignment = async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
+      message: "Assignment queued for creation",
       assignment,
       jobId: job.id,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Create Assignment Error:", error);
 
     res.status(500).json({
       success: false,
-      message: "Failed to create assignment",
+      message: "Failed to create assignment due to an internal server error",
     });
   }
 };
