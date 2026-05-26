@@ -20,14 +20,31 @@ export default function Home() {
     const token = localStorage.getItem("veda_auth_token");
     if (!token && !isAuthenticated) {
       router.push("/signin");
+      return;
     }
-  }, [isAuthenticated, router]);
+
+    if (isAuthenticated && user && !user.schoolName) {
+      toast.error(
+        "Please configure your school profile to access the dashboard!",
+      );
+      router.push("/school");
+    }
+  }, [isAuthenticated, user, router]);
 
   const handleLogout = () => {
     logout();
     toast.success("Successfully logged out!");
     router.push("/signin");
   };
+
+  const schoolInitials = user?.schoolName
+    ? user.schoolName
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .slice(0, 3)
+        .toUpperCase()
+    : "SCH";
 
   if (
     !isAuthenticated &&
@@ -170,28 +187,23 @@ export default function Home() {
             Settings
           </button>
 
-          {/* Profile Card */}
           <div className="bg-[#F0F1F3] rounded-[1.75rem] p-4 flex items-center gap-3.5 border border-gray-200/20">
-            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm overflow-hidden flex items-center justify-center border border-gray-100 flex-shrink-0">
+            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm overflow-hidden flex items-center justify-center border border-gray-100 shrink-0">
               <span className="font-mono font-extrabold text-[#FF4F17] text-lg">
-                DPS
+                {schoolInitials}
               </span>
             </div>
             <div className="overflow-hidden">
               <p className="font-bold text-[#121212] text-sm truncate leading-snug">
-                Delhi Public School
+                {user?.schoolName || "My School"}
               </p>
               <p className="text-gray-500 text-xs font-semibold truncate">
-                Bokaro Steel City
+                {user?.schoolAddress || "Institution"}
               </p>
             </div>
           </div>
         </div>
       </aside>
-
-      {/* ========================================================================= */}
-      {/* MOBILE HEADER (Floating Logo Bar) */}
-      {/* ========================================================================= */}
       <header className="md:hidden bg-white p-4 flex items-center justify-between border-b border-gray-100/50 shadow-sm rounded-b-[1.75rem] select-none z-20">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 relative overflow-hidden">
@@ -209,7 +221,6 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Mobile Notification bell */}
           <button className="relative w-10 h-10 rounded-full bg-[#F0F1F3] flex items-center justify-center text-gray-700 cursor-pointer">
             <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#FF4F17] rounded-full border border-white" />
             <svg
@@ -227,7 +238,6 @@ export default function Home() {
             </svg>
           </button>
 
-          {/* User Profile Bubble */}
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="w-10 h-10 rounded-full bg-[#FF4F17]/10 flex items-center justify-center font-mono font-bold text-[#FF4F17] text-sm border-2 border-white shadow-sm overflow-hidden cursor-pointer"
@@ -237,14 +247,9 @@ export default function Home() {
         </div>
       </header>
 
-      {/* ========================================================================= */}
-      {/* MAIN MAIN CONTENT CONTAINER */}
-      {/* ========================================================================= */}
-      <main className="flex-1 bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-sm flex flex-col overflow-hidden border border-gray-100/50 p-6 md:p-8 justify-between relative min-h-[calc(100vh-140px)] md:min-h-0">
-        {/* Top Actions Row */}
+      <main className="flex-1 bg-white rounded-4xl md:rounded-[2.5rem] shadow-sm flex flex-col overflow-hidden border border-gray-100/50 p-6 md:p-8 justify-between relative min-h-[calc(100vh-140px)] md:min-h-0">
         <div className="flex items-center justify-between border-b border-gray-50 pb-5 mb-6">
           <div className="flex items-center gap-3">
-            {/* Back button */}
             <button className="w-10 h-10 rounded-full border border-gray-200/60 bg-white flex items-center justify-center text-gray-500 hover:text-[#121212] transition-colors cursor-pointer">
               <svg
                 className="w-5 h-5"
@@ -265,7 +270,6 @@ export default function Home() {
             </h1>
           </div>
 
-          {/* Top-Right Notification & Profile Area (Desktop Only) */}
           <div className="hidden md:flex items-center gap-4 relative">
             <button className="relative w-11 h-11 rounded-full bg-[#F0F1F3] flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-200/50 transition-colors cursor-pointer">
               <span className="absolute top-2.5 right-3.5 w-2 h-2 bg-[#FF4F17] rounded-full border border-white" />
@@ -311,7 +315,6 @@ export default function Home() {
                 </svg>
               </button>
 
-              {/* Profile Dropdown Menu Card */}
               {showProfileMenu && (
                 <div className="absolute right-0 mt-3 w-56 bg-white rounded-3xl shadow-xl border border-gray-100 p-3 z-30 animate-in fade-in slide-in-from-top-3 duration-200">
                   <div className="px-4 py-3 border-b border-gray-50 mb-2">
@@ -346,7 +349,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mobile Profile Dropdown Overlay */}
           {showProfileMenu && (
             <div className="md:hidden absolute right-6 top-16 w-52 bg-white rounded-2xl shadow-lg border border-gray-100 p-2 z-30 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="px-3.5 py-2.5 border-b border-gray-50 mb-1.5">
@@ -379,8 +381,7 @@ export default function Home() {
             </div>
           )}
         </div>
-
-        {/* Empty State Contents (Centered Canvas) */}
+        =
         <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto text-center py-6">
           <div className="relative mb-8 max-w-[280px] w-full flex justify-center">
             <Image
@@ -388,7 +389,7 @@ export default function Home() {
               alt="No assignments illustration"
               width={220}
               height={220}
-              className="object-contain animate-pulse duration-[4000ms]"
+              className="object-contain animate-pulse duration-4000"
               priority
             />
           </div>
@@ -427,10 +428,6 @@ export default function Home() {
             Create Your First Assignment
           </button>
         </div>
-
-        {/* ========================================================================= */}
-        {/* MOBILE FLOATING ACTION BUTTON */}
-        {/* ========================================================================= */}
         <button
           onClick={() => toast.info("Add button pressed!")}
           className="md:hidden absolute bottom-6 right-6 w-14 h-14 rounded-full bg-[#121212] hover:bg-black text-white flex items-center justify-center shadow-lg border-2 border-[#FF4F17] cursor-pointer active:scale-95 transition-transform"
@@ -450,10 +447,6 @@ export default function Home() {
           </svg>
         </button>
       </main>
-
-      {/* ========================================================================= */}
-      {/* MOBILE BOTTOM NAVIGATION BAR */}
-      {/* ========================================================================= */}
       <footer className="md:hidden fixed bottom-0 left-0 right-0 bg-[#121212] p-3 border-t border-white/5 flex items-center justify-around z-20 rounded-t-[1.75rem] shadow-xl select-none">
         {[
           {

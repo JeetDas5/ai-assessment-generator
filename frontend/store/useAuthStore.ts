@@ -5,6 +5,8 @@ export interface User {
   id: string;
   name?: string;
   email: string;
+  schoolName?: string;
+  schoolAddress?: string;
 }
 
 interface AuthState {
@@ -15,6 +17,7 @@ interface AuthState {
   error: string | null;
   signin: (email: string, password: string) => Promise<boolean>;
   signup: (name: string, email: string, password: string) => Promise<boolean>;
+  updateSchoolInfo: (schoolName: string, schoolAddress?: string) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
   initialize: () => void;
@@ -115,6 +118,42 @@ export const useAuthStore = create<AuthState>((set) => ({
           typeof errorMessage === "string"
             ? errorMessage
             : (Object.values(errorMessage)[0] as string),
+      });
+      return false;
+    }
+  },
+
+  updateSchoolInfo: async (schoolName, schoolAddress) => {
+    set({ isLoading: true, error: null });
+    try {
+      const token = useAuthStore.getState().token;
+      const response = await axios.put(
+        `${API_URL}/auth/school`,
+        { schoolName, schoolAddress },
+        {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem("veda_auth_token")}`,
+          },
+        }
+      );
+      const { user } = response.data;
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("veda_auth_user", JSON.stringify(user));
+      }
+
+      set({
+        user,
+        isLoading: false,
+        error: null,
+      });
+      return true;
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message || "Failed to update school profile";
+      set({
+        isLoading: false,
+        error: errorMessage,
       });
       return false;
     }

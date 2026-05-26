@@ -22,7 +22,7 @@ export default function Signin() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
-  const { signin, isAuthenticated, isLoading, error, clearError, initialize } =
+  const { user, signin, isAuthenticated, isLoading, error, clearError, initialize } =
     useAuthStore();
 
   useEffect(() => {
@@ -31,9 +31,13 @@ export default function Signin() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/");
+      if (user && !user.schoolName) {
+        router.push("/school");
+      } else {
+        router.push("/");
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   const {
     register,
@@ -52,7 +56,12 @@ export default function Signin() {
     const success = await signin(values.email, values.password);
     if (success) {
       toast.success("Successfully signed in!");
-      router.push("/");
+      const user = useAuthStore.getState().user;
+      if (user && user.schoolName) {
+        router.push("/");
+      } else {
+        router.push("/school");
+      }
     }
   };
 

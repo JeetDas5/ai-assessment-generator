@@ -2,6 +2,7 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model";
 import { Request, Response } from "express";
+import { AuthRequest } from "../middleware/auth.middleware";
 import { signupSchema, signinSchema } from "../validations/user.validation";
 
 export const signup = async (req: Request, res: Response) => {
@@ -52,6 +53,8 @@ export const signup = async (req: Request, res: Response) => {
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
+        schoolName: newUser.schoolName,
+        schoolAddress: newUser.schoolAddress,
       },
     });
   } catch (error) {
@@ -110,6 +113,8 @@ export const signin = async (req: Request, res: Response) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        schoolName: user.schoolName,
+        schoolAddress: user.schoolAddress,
       },
     });
   } catch (error) {
@@ -117,6 +122,63 @@ export const signin = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Internal server error during sign in",
+    });
+  }
+};
+
+export const updateSchoolInfo = async (req: AuthRequest, res: Response) => {
+  try {
+    const { schoolName, schoolAddress } = req.body;
+
+    if (!schoolName || typeof schoolName !== "string" || schoolName.trim().length < 2) {
+      res.status(400).json({
+        success: false,
+        message: "School name is required and must be at least 2 characters long",
+      });
+      return;
+    }
+
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    user.schoolName = schoolName.trim();
+    if (schoolAddress !== undefined) {
+      user.schoolAddress = typeof schoolAddress === "string" ? schoolAddress.trim() : "";
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "School profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        schoolName: user.schoolName,
+        schoolAddress: user.schoolAddress,
+      },
+    });
+  } catch (error) {
+    console.error("Update School Info Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during school profile update",
     });
   }
 };

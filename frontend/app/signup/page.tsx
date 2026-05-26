@@ -20,7 +20,7 @@ type SignupFormValues = z.infer<typeof signupFormSchema>;
 
 export default function Signup() {
   const router = useRouter();
-  const { signup, isAuthenticated, isLoading, error, clearError, initialize } =
+  const { user, signup, isAuthenticated, isLoading, error, clearError, initialize } =
     useAuthStore();
 
   useEffect(() => {
@@ -29,9 +29,13 @@ export default function Signup() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/");
+      if (user && !user.schoolName) {
+        router.push("/school");
+      } else {
+        router.push("/");
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   const {
     register,
@@ -51,7 +55,7 @@ export default function Signup() {
     const success = await signup(values.name, values.email, values.password);
     if (success) {
       toast.success("Account created successfully!");
-      router.push("/");
+      router.push("/school");
     } else {
       toast.error(error || "Registration failed. Please try again.");
     }
