@@ -23,3 +23,36 @@ export const assignmentSchema = z.object({
 export type SignupInput = z.infer<typeof signupSchema>;
 export type SigninInput = z.infer<typeof signinSchema>;
 export type AssignmentInput = z.infer<typeof assignmentSchema>;
+
+export interface Question {
+  _id?: string;
+  text: string;
+  difficulty: string;
+  marks: number;
+  answer: string;
+}
+
+export interface Section {
+  _id?: string;
+  title: string;
+  instruction: string;
+  questions: Question[];
+}
+
+export interface Assignment {
+  _id: string;
+  title: string;
+  dueDate: string;
+  questionTypes: string[];
+  totalQuestions: number;
+  totalMarks: number;
+  instructions?: string;
+  uploadedFile?: string;
+  createdBy?: string;
+  status: "queued" | "processing" | "completed" | "failed";
+  generatedPaper?: Section[];
+  error?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+

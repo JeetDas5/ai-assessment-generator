@@ -5,10 +5,11 @@ import { MoreVertical, Eye, Trash2, Plus } from "lucide-react";
 import { useAssignmentStore } from "../store/useAssignmentStore";
 import { toast } from "sonner";
 import ConfirmationModal from "./ConfirmationModal";
+import { Assignment } from "@workspace/shared";
 
 interface AssignmentsListProps {
-  assignments: any[];
-  onSelect: (assignment: any) => void;
+  assignments: Assignment[];
+  onSelect: (assignment: Assignment) => void;
   onCreateClick: () => void;
 }
 

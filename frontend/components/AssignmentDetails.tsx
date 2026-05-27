@@ -2,36 +2,7 @@
 
 import { User } from "../store/useAuthStore";
 import { Download } from "lucide-react";
-
-interface Question {
-  text: string;
-  difficulty: string;
-  marks: number;
-  answer?: string;
-  _id?: string;
-}
-
-interface Section {
-  title: string;
-  instruction: string;
-  questions: Question[];
-  _id?: string;
-}
-
-interface Assignment {
-  _id: string;
-  title: string;
-  dueDate: string;
-  questionTypes: string[];
-  totalQuestions: number;
-  totalMarks: number;
-  instructions?: string;
-  uploadedFile?: string;
-  status: "queued" | "processing" | "completed" | "failed";
-  generatedPaper?: Section[];
-  error?: string;
-  createdAt: string;
-}
+import { Assignment, Section, Question } from "@workspace/shared";
 
 interface AssignmentDetailsProps {
   assignment: Assignment;

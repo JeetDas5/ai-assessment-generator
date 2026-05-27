@@ -32,7 +32,7 @@ export default function ConfirmationModal({
         onClick={isLoading ? undefined : onClose}
       />
 
-      <div className="relative bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl border border-gray-100/50 flex flex-col items-center text-center z-10 animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative bg-white w-full max-w-sm rounded-4xl p-8 shadow-2xl border border-gray-100/50 flex flex-col items-center text-center z-10 animate-in fade-in zoom-in-95 duration-200">
         <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mb-5 shrink-0 text-red-500 animate-bounce">
           <AlertTriangle className="w-7 h-7" />
         </div>
