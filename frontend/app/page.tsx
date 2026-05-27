@@ -2,23 +2,30 @@
 
 import Image from "next/image";
 import { toast, Toaster } from "sonner";
+import { RefreshCcw, ArrowLeft, Bell, ChevronDown, LogOut, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { useAuthStore } from "../store/useAuthStore";
 import { useAssignmentStore } from "../store/useAssignmentStore";
 
-// Modular Components
 import Sidebar from "../components/Sidebar";
-import AssignmentWizard from "../components/AssignmentWizard";
+import MyGroups from "../components/MyGroups";
+import MyLibrary from "../components/MyLibrary";
+import SettingsView from "../components/SettingsView";
+import HomeDashboard from "../components/HomeDashboard";
 import AssignmentsList from "../components/AssignmentsList";
+import TeachersToolkit from "../components/TeachersToolkit";
+import AssignmentWizard from "../components/AssignmentWizard";
 import AssignmentDetails from "../components/AssignmentDetails";
-import { RefreshCcw } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
-  const { user, logout, isAuthenticated, initialize } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("Assignments");
+
+  const [activeTab, setActiveTab] = useState("Home");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const { user, logout, isAuthenticated, initialize } = useAuthStore();
 
   const {
     assignments,
@@ -59,7 +66,8 @@ export default function Home() {
     if (!isAuthenticated) return;
 
     const hasActiveJobs = assignments.some(
-      (a) => a.status === "queued" || a.status === "processing"
+      (assignment) =>
+        assignment.status === "queued" || assignment.status === "processing",
     );
 
     if (!hasActiveJobs) return;
@@ -102,14 +110,13 @@ export default function Home() {
         activeTab={activeTab}
         setActiveTab={(tab) => {
           setActiveTab(tab);
-          selectAssignment(null); // Return to list if nav clicked
+          selectAssignment(null);
           setShowCreateWizard(false);
         }}
         onCreateClick={() => setShowCreateWizard(true)}
         user={user}
       />
 
-      {/* Mobile Top Navbar Header */}
       <header className="md:hidden bg-white p-4 flex items-center justify-between border-b border-gray-100/50 shadow-sm rounded-b-[1.75rem] select-none z-20 print:hidden">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 relative overflow-hidden">
@@ -154,7 +161,6 @@ export default function Home() {
       </header>
 
       <main className="flex-1 bg-white rounded-4xl md:rounded-[2.5rem] shadow-sm flex flex-col overflow-hidden border border-gray-100/50 p-6 md:p-8 justify-between relative min-h-[calc(100vh-140px)] md:min-h-0 print:shadow-none print:border-none print:p-0 print:overflow-visible print:bg-white print:min-h-0">
-    
         <div className="flex items-center justify-between border-b border-gray-50 md:pb-5 md:mb-6 shrink-0 print:hidden">
           <div className="flex items-center gap-3">
             <button
@@ -169,19 +175,7 @@ export default function Home() {
               }}
               className="w-10 h-10 rounded-full border border-gray-200/60 bg-white flex items-center justify-center text-gray-500 hover:text-[#121212] transition-colors cursor-pointer"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
+              <ArrowLeft className="w-5 h-5" />
             </button>
             <h1 className="font-sans text-xl font-extrabold text-[#121212] tracking-tight">
               {showCreateWizard
@@ -208,19 +202,7 @@ export default function Home() {
 
                 <button className="relative w-11 h-11 rounded-full bg-[#F0F1F3] flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-200/50 transition-colors cursor-pointer">
                   <span className="absolute top-2.5 right-3.5 w-2 h-2 bg-[#FF4F17] rounded-full border border-white" />
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
-                  </svg>
+                  <Bell className="w-5 h-5" />
                 </button>
               </>
             )}
@@ -236,19 +218,7 @@ export default function Home() {
                 <span className="font-bold text-sm text-[#121212] pr-1 truncate max-w-[120px]">
                   {user?.name || "Teacher"}
                 </span>
-                <svg
-                  className="w-4 h-4 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                <ChevronDown className="w-4 h-4 text-gray-500" />
               </button>
 
               {showProfileMenu && (
@@ -265,19 +235,7 @@ export default function Home() {
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-2xl transition-colors cursor-pointer"
                   >
-                    <svg
-                      className="w-4.5 h-4.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2.5"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                      />
-                    </svg>
+                    <LogOut className="w-4.5 h-4.5" />
                     Sign Out
                   </button>
                 </div>
@@ -299,26 +257,13 @@ export default function Home() {
                 onClick={handleLogout}
                 className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
+                <LogOut className="w-4 h-4" />
                 Sign Out
               </button>
             </div>
           )}
         </div>
 
-        {/* Main Conditional View Block */}
         {showCreateWizard ? (
           <AssignmentWizard
             onClose={() => setShowCreateWizard(false)}
@@ -333,12 +278,32 @@ export default function Home() {
             user={user}
             onBack={() => selectAssignment(null)}
           />
-        ) : assignments.length > 0 ? (
+        ) : activeTab === "Home" ? (
+          <HomeDashboard
+            user={user}
+            onCreateClick={() => setShowCreateWizard(true)}
+            onNavigate={(tab) => {
+              setActiveTab(tab);
+              if (tab === "Assignments") {
+                selectAssignment(null);
+                setShowCreateWizard(false);
+              }
+            }}
+          />
+        ) : activeTab === "My Groups" ? (
+          <MyGroups />
+        ) : activeTab === "AI Teacher's Toolkit" ? (
+          <TeachersToolkit />
+        ) : activeTab === "My Library" ? (
+          <MyLibrary />
+        ) : activeTab === "Settings" ? (
+          <SettingsView user={user} />
+        ) : activeTab === "Assignments" && assignments.length > 0 ? (
           <AssignmentsList
             assignments={assignments}
             onSelect={selectAssignment}
           />
-        ) : (
+        ) : activeTab === "Assignments" ? (
           <div className="flex-1 flex flex-col items-center justify-center md:max-w-xl mx-auto text-center py-6">
             <div className="relative mb-8 max-w-[280px] w-full flex justify-center">
               <Image
@@ -365,48 +330,27 @@ export default function Home() {
               onClick={() => setShowCreateWizard(true)}
               className="bg-[#121212] hover:bg-black text-white font-light py-2 px-6 rounded-full border-2 border-transparent hover:border-[#FF4F17] transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
+              <Plus className="w-5 h-5" />
               Create Your First Assignment
             </button>
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+            Select a tab from the sidebar to begin.
           </div>
         )}
 
         {/* Mobile floating action button */}
-        {!showCreateWizard && !selectedAssignment && (
-          <button
-            onClick={() => setShowCreateWizard(true)}
-            className="md:hidden absolute bottom-6 right-6 w-14 h-14 rounded-full bg-[#121212] hover:bg-black text-white flex items-center justify-center shadow-lg border-2 border-[#FF4F17] cursor-pointer active:scale-95 transition-transform"
-          >
-            <svg
-              className="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.5"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </button>
-        )}
+         {!showCreateWizard && !selectedAssignment && (
+           <button
+             onClick={() => setShowCreateWizard(true)}
+             className="md:hidden absolute bottom-6 right-6 w-14 h-14 rounded-full bg-[#121212] hover:bg-black text-white flex items-center justify-center shadow-lg border-2 border-[#FF4F17] cursor-pointer active:scale-95 transition-transform"
+           >
+             <Plus className="w-6 h-6 text-white" />
+           </button>
+         )}
       </main>
 
-      {/* Mobile Footer Bottom Nav */}
       <footer className="md:hidden fixed bottom-0 left-0 right-0 bg-[#121212] p-3 border-t border-white/5 flex items-center justify-around z-20 rounded-t-[1.75rem] shadow-xl select-none print:hidden">
         {[
           {

@@ -97,17 +97,22 @@ export default function Sidebar({
       </div>
 
       <div className="space-y-4 pt-6 border-t border-gray-100">
-        {/* Settings button */}
         <button
-          onClick={() => alert("Settings interface coming soon!")}
-          className="w-full flex items-center gap-4 px-5 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 hover:text-[#121212] transition-all duration-200 cursor-pointer"
+          onClick={() => setActiveTab("Settings")}
+          className={`w-full flex items-center gap-4 px-5 py-3 rounded-2xl font-semibold transition-all duration-200 cursor-pointer ${
+            activeTab === "Settings"
+              ? "bg-[#F0F1F3] text-[#121212]"
+              : "text-gray-500 hover:bg-gray-50 hover:text-[#121212]"
+          }`}
         >
           <Image
             src="/icons/setting.svg"
             width={20}
             height={20}
             alt="Settings"
-            className="w-5 h-5 opacity-60 hover:opacity-100 transition-all"
+            className={`w-5 h-5 transition-all ${
+              activeTab === "Settings" ? "brightness-0 opacity-100" : "opacity-60"
+            }`}
           />
           Settings
         </button>

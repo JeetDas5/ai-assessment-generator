@@ -1,6 +1,7 @@
 "use client";
 
 import { User } from "../store/useAuthStore";
+import { Download } from "lucide-react";
 
 interface Question {
   text: string;
@@ -79,19 +80,7 @@ export default function AssignmentDetails({
           onClick={handlePrint}
           className="bg-white hover:bg-gray-100 text-[#1E1F22] font-bold py-2.5 px-6 rounded-full transition-all shrink-0 flex items-center justify-center gap-2 cursor-pointer text-sm shadow-sm z-10"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2.5"
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-            />
-          </svg>
+          <Download className="w-4 h-4" />
           Download as PDF
         </button>
       </div>
