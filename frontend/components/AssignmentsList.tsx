@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { MoreVertical, Eye, Trash2, Plus } from "lucide-react";
 import { useAssignmentStore } from "../store/useAssignmentStore";
 import { toast } from "sonner";
+import ConfirmationModal from "./ConfirmationModal";
 
 interface AssignmentsListProps {
   assignments: any[];
@@ -19,6 +20,7 @@ export default function AssignmentsList({
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const { deleteAssignment } = useAssignmentStore();
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const toggleMenu = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -31,18 +33,10 @@ export default function AssignmentsList({
     return () => window.removeEventListener("click", closeMenus);
   }, []);
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
+  const handleDelete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (confirm("Are you sure you want to delete this assignment?")) {
-      setIsDeleting(id);
-      const success = await deleteAssignment(id);
-      setIsDeleting(null);
-      if (success) {
-        toast.success("Assignment deleted successfully!");
-      } else {
-        toast.error("Failed to delete assignment.");
-      }
-    }
+    setDeleteTargetId(id);
+    setOpenMenuId(null);
   };
 
   const formatDate = (dateStr: string) => {
@@ -155,6 +149,28 @@ export default function AssignmentsList({
           Create Assignment
         </button>
       </div>
+
+      <ConfirmationModal
+        isOpen={deleteTargetId !== null}
+        title="Delete Assignment"
+        message="Are you sure you want to delete this assignment? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        isLoading={isDeleting !== null}
+        onClose={() => setDeleteTargetId(null)}
+        onConfirm={async () => {
+          if (!deleteTargetId) return;
+          setIsDeleting(deleteTargetId);
+          const success = await deleteAssignment(deleteTargetId);
+          setIsDeleting(null);
+          setDeleteTargetId(null);
+          if (success) {
+            toast.success("Assignment deleted successfully!");
+          } else {
+            toast.error("Failed to delete assignment.");
+          }
+        }}
+      />
     </div>
   );
 }
