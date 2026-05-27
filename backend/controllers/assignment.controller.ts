@@ -6,7 +6,6 @@ import { generationQueue } from "../queues/generation.queue";
 
 export const createAssignment = async (req: AuthRequest, res: Response) => {
   try {
-    // Parse questionTypes robustly
     let rawQuestionTypes = req.body.questionTypes;
     let parsedQuestionTypes: any = [];
     if (rawQuestionTypes) {
