@@ -29,7 +29,8 @@
     "openai": "^6.39.0",
     "pdf-parse": "^2.4.5",
     "socket.io": "^4.8.3",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "@workspace/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

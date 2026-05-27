@@ -1,2 +1,8 @@
 .env
 node_modules
+
+# Monorepo build and workspace ignores
+.next/
+dist/
+out/
+*.tsbuildinfo

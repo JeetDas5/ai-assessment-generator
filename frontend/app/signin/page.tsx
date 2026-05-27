@@ -10,11 +10,7 @@ import { z } from "zod";
 import { toast, Toaster } from "sonner";
 import { useAuthStore } from "../../store/useAuthStore";
 import { EyeOff, Eye } from "lucide-react";
-
-const signinFormSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
-});
+import { signinSchema as signinFormSchema } from "@workspace/shared";
 
 type SigninFormValues = z.infer<typeof signinFormSchema>;
 

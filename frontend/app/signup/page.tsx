@@ -9,12 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast, Toaster } from "sonner";
 import { useAuthStore } from "../../store/useAuthStore";
-
-const signupFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters long"),
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-});
+import { signupSchema as signupFormSchema } from "@workspace/shared";
 
 type SignupFormValues = z.infer<typeof signupFormSchema>;
 

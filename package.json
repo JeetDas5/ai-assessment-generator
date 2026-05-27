@@ -1,0 +1,16 @@
+{
+  "name": "assignment-generator-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"frontend,backend\" -c \"cyan,magenta\" \"bun run --cwd frontend dev\" \"bun run --cwd backend dev\"",
+    "build": "bun run --cwd frontend build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
