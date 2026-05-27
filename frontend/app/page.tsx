@@ -5,12 +5,13 @@ import { toast, Toaster } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "../store/useAuthStore";
-import axios from "axios";
+import { useAssignmentStore } from "../store/useAssignmentStore";
 
 // Modular Components
 import Sidebar from "../components/Sidebar";
 import AssignmentWizard from "../components/AssignmentWizard";
 import AssignmentsList from "../components/AssignmentsList";
+import AssignmentDetails from "../components/AssignmentDetails";
 
 export default function Home() {
   const router = useRouter();
@@ -18,32 +19,16 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("Assignments");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  // Assignment List & Fetching States
-  const [assignments, setAssignments] = useState<any[]>([]);
-  const [isFetchingAssignments, setIsFetchingAssignments] = useState(false);
-  const [showCreateWizard, setShowCreateWizard] = useState(false);
-
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-
-  const fetchAssignments = async () => {
-    setIsFetchingAssignments(true);
-    try {
-      const token = useAuthStore.getState().token || localStorage.getItem("veda_auth_token");
-      if (!token) return;
-      const response = await axios.get(`${API_URL}/assignments`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.data?.success) {
-        setAssignments(response.data.assignments || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch assignments:", error);
-    } finally {
-      setIsFetchingAssignments(false);
-    }
-  };
+  // Zustand Assignment Store Integration
+  const {
+    assignments,
+    isFetchingAssignments,
+    showCreateWizard,
+    selectedAssignment,
+    fetchAssignments,
+    selectAssignment,
+    setShowCreateWizard
+  } = useAssignmentStore();
 
   useEffect(() => {
     initialize();
@@ -100,7 +85,11 @@ export default function Home() {
       {/* Sidebar Component */}
       <Sidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={(tab) => {
+          setActiveTab(tab);
+          selectAssignment(null); // Return to list if nav clicked
+          setShowCreateWizard(false);
+        }}
         onCreateClick={() => setShowCreateWizard(true)}
         user={user}
       />
@@ -156,7 +145,15 @@ export default function Home() {
         <div className="flex items-center justify-between border-b border-gray-50 md:pb-5 md:mb-6 flex-shrink-0">
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => showCreateWizard ? setShowCreateWizard(false) : setActiveTab("Home")}
+              onClick={() => {
+                if (showCreateWizard) {
+                  setShowCreateWizard(false);
+                } else if (selectedAssignment) {
+                  selectAssignment(null);
+                } else {
+                  setActiveTab("Home");
+                }
+              }}
               className="w-10 h-10 rounded-full border border-gray-200/60 bg-white flex items-center justify-center text-gray-500 hover:text-[#121212] transition-colors cursor-pointer"
             >
               <svg
@@ -173,13 +170,17 @@ export default function Home() {
                 />
               </svg>
             </button>
-            <h1 className="font-sans text-xl font-extrabold text-[#121212]">
-              {showCreateWizard ? "Assignment" : activeTab}
+            <h1 className="font-sans text-xl font-extrabold text-[#121212] tracking-tight">
+              {showCreateWizard 
+                ? "Assignment" 
+                : selectedAssignment 
+                  ? "Generated Paper" 
+                  : activeTab}
             </h1>
           </div>
 
           <div className="hidden md:flex items-center gap-4 relative">
-            {!showCreateWizard && (
+            {!showCreateWizard && !selectedAssignment && (
               <>
                 <button 
                   onClick={fetchAssignments}
@@ -313,8 +314,17 @@ export default function Home() {
               fetchAssignments();
             }}
           />
+        ) : selectedAssignment ? (
+          <AssignmentDetails 
+            assignment={selectedAssignment}
+            user={user}
+            onBack={() => selectAssignment(null)}
+          />
         ) : assignments.length > 0 ? (
-          <AssignmentsList assignments={assignments} />
+          <AssignmentsList 
+            assignments={assignments} 
+            onSelect={selectAssignment}
+          />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center md:max-w-xl mx-auto text-center py-6">
             <div className="relative mb-8 max-w-[280px] w-full flex justify-center">
@@ -361,7 +371,7 @@ export default function Home() {
         )}
         
         {/* Mobile floating action button */}
-        {!showCreateWizard && (
+        {!showCreateWizard && !selectedAssignment && (
           <button
             onClick={() => setShowCreateWizard(true)}
             className="md:hidden absolute bottom-6 right-6 w-14 h-14 rounded-full bg-[#121212] hover:bg-black text-white flex items-center justify-center shadow-lg border-2 border-[#FF4F17] cursor-pointer active:scale-95 transition-transform"
@@ -417,6 +427,8 @@ export default function Home() {
                     ? "My Library"
                     : item.name,
               );
+              selectAssignment(null);
+              setShowCreateWizard(false);
             }}
             className="flex flex-col items-center gap-1.5 py-1 px-3 cursor-pointer"
           >

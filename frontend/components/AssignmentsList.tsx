@@ -4,9 +4,10 @@ import Image from "next/image";
 
 interface AssignmentsListProps {
   assignments: any[];
+  onSelect: (assignment: any) => void;
 }
 
-export default function AssignmentsList({ assignments }: AssignmentsListProps) {
+export default function AssignmentsList({ assignments, onSelect }: AssignmentsListProps) {
   return (
     <div className="flex-1 flex flex-col w-full py-2 overflow-y-auto px-1 max-h-[calc(100vh-220px)] md:max-h-[calc(100vh-200px)] custom-scrollbar">
       <div className="overflow-x-auto rounded-3xl border border-gray-100 shadow-sm">
@@ -22,7 +23,11 @@ export default function AssignmentsList({ assignments }: AssignmentsListProps) {
           </thead>
           <tbody className="divide-y divide-gray-100 border-t border-gray-100">
             {assignments.map((assignment: any) => (
-              <tr key={assignment._id} className="hover:bg-gray-50/40 transition-colors">
+              <tr 
+                key={assignment._id} 
+                onClick={() => onSelect(assignment)}
+                className="hover:bg-gray-50/40 transition-colors cursor-pointer"
+              >
                 <th className="flex gap-3 px-6 py-4 font-bold text-[#121212]">
                   <div className="flex flex-col">
                     <span className="text-sm">{assignment.title}</span>

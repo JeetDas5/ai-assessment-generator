@@ -4,6 +4,7 @@ const QuestionSchema = new mongoose.Schema({
   text: String,
   difficulty: String,
   marks: Number,
+  answer: String,
 });
 
 const SectionSchema = new mongoose.Schema({

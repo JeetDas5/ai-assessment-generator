@@ -79,6 +79,7 @@ Guidelines:
    - "text": The complete question text.
    - "difficulty": "Easy", "Moderate", or "Hard".
    - "marks": A positive number representing the weight of the question.
+   - "answer": A comprehensive, detailed, step-by-step correct answer, key explanation, or solution guidelines for grading.
 4. IMPORTANT: Ensure that the sum of marks of all generated questions in all sections EXACTLY equals ${assignment.totalMarks}.
 5. IMPORTANT: Ensure that the total number of questions across all sections EXACTLY equals ${assignment.totalQuestions}.
 6. Only generate questions that belong to the requested question types: ${assignment.questionTypes ? assignment.questionTypes.join(", ") : "Any"}.
@@ -94,7 +95,8 @@ You must return a raw JSON object matching this schema:
         {
           "text": "...",
           "difficulty": "Easy",
-          "marks": 5
+          "marks": 5,
+          "answer": "Detailed step-by-step correct answer..."
         }
       ]
     }
