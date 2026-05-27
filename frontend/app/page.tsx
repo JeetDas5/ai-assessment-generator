@@ -67,7 +67,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#F0F1F3] flex flex-col md:flex-row p-0 md:p-6 gap-6 font-sans relative overflow-x-hidden">
       <Toaster position="bottom-right" richColors />
 
-      <aside className="hidden md:flex w-72 bg-white rounded-[2.5rem] shadow-sm p-8 flex-col justify-between border border-gray-100/50 select-none">
+      <aside className="hidden md:flex w-72 bg-white rounded-[2.5rem] shadow-sm p-6 flex-col justify-between border border-gray-100/50 select-none">
         <div className="space-y-8">
           <div className="flex items-center gap-1 z-10">
             <div className="w-12 h-12 relative translate-y-[8px]">
@@ -90,69 +90,60 @@ export default function Home() {
                 "Create Assignment creation form implementation coming soon!",
               )
             }
-            className="w-full bg-[#1A1A1A] hover:bg-black text-white font-semibold py-2 px-6 rounded-full border-[2.5px] border-[#FF4F17] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full bg-[#1A1A1A] hover:bg-black text-white font-semibold py-2 px-4 rounded-full border-[2.5px] border-[#FF4F17] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
           >
-            <svg
-              className="w-5 h-5 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.5"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
+            <Image
+              src="/icons/sparkle.svg"
+              width={20}
+              height={20}
+              alt="stars"
+            />
             Create Assignment
           </button>
 
-          <nav className="space-y-2">
+          <nav className="space-y-1">
             {[
               {
                 name: "Home",
-                icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
+                icon: "/icons/home.svg",
               },
               {
                 name: "My Groups",
-                icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+                icon: "/icons/grp.svg",
               },
               {
                 name: "Assignments",
-                icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+                icon: "/icons/file-text.svg",
               },
               {
                 name: "AI Teacher's Toolkit",
-                icon: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z",
+                icon: "/icons/book.svg",
               },
               {
                 name: "My Library",
-                icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
+                icon: "/icons/library.svg",
               },
             ].map((item) => (
               <button
                 key={item.name}
                 onClick={() => setActiveTab(item.name)}
-                className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-semibold text-base transition-all duration-200 cursor-pointer ${
+                className={`w-full flex items-center gap-4 px-5 py-2.5 rounded-2xl font-semibold text-base transition-all duration-200 cursor-pointer ${
                   activeTab === item.name
                     ? "bg-[#F0F1F3] text-[#121212]"
                     : "text-gray-500 hover:bg-gray-50 hover:text-[#121212]"
                 }`}
               >
-                <svg
-                  className={`w-5 h-5 ${activeTab === item.name ? "text-[#121212]" : "text-gray-400"}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d={item.icon}
-                  />
-                </svg>
+                <Image
+                  src={item.icon}
+                  width={20}
+                  height={20}
+                  alt={item.name}
+                  className={`w-5 h-5 transition-all ${
+                    activeTab === item.name
+                      ? "brightness-0 opacity-100"
+                      : "opacity-60"
+                  }`}
+                />
                 {item.name}
               </button>
             ))}
@@ -160,30 +151,17 @@ export default function Home() {
         </div>
 
         <div className="space-y-4 pt-6 border-t border-gray-100">
-          {/* Settings Nav Item */}
           <button
             onClick={() => toast.info("Settings interface coming soon!")}
             className="w-full flex items-center gap-4 px-5 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 hover:text-[#121212] transition-all duration-200 cursor-pointer"
           >
-            <svg
-              className="w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
+            <Image
+              src="/icons/setting.svg"
+              width={20}
+              height={20}
+              alt="Settings"
+              className="w-5 h-5 opacity-60 hover:opacity-100 transition-all"
+            />
             Settings
           </button>
 
@@ -248,7 +226,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1 bg-white rounded-4xl md:rounded-[2.5rem] shadow-sm flex flex-col overflow-hidden border border-gray-100/50 p-6 md:p-8 justify-between relative min-h-[calc(100vh-140px)] md:min-h-0">
-        <div className="flex items-center justify-between border-b border-gray-50 pb-5 mb-6">
+        <div className="flex items-center justify-between border-b border-gray-50 md:pb-5 md:mb-6">
           <div className="flex items-center gap-3">
             <button className="w-10 h-10 rounded-full border border-gray-200/60 bg-white flex items-center justify-center text-gray-500 hover:text-[#121212] transition-colors cursor-pointer">
               <svg
@@ -288,7 +266,6 @@ export default function Home() {
               </svg>
             </button>
 
-            {/* Profile Dropdown Header Trigger */}
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -381,11 +358,11 @@ export default function Home() {
             </div>
           )}
         </div>
-        =
-        <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto text-center py-6">
+
+        <div className="flex-1 flex flex-col items-center justify-center md:max-w-xl mx-auto text-center py-6">
           <div className="relative mb-8 max-w-[280px] w-full flex justify-center">
             <Image
-              src="/illustration.svg"
+              src="/icons/illustration.svg"
               alt="No assignments illustration"
               width={220}
               height={220}
@@ -394,11 +371,11 @@ export default function Home() {
             />
           </div>
 
-          <h2 className="font-mono text-3xl md:text-4xl font-extrabold text-[#121212] tracking-tight mb-4">
+          <h2 className="font-mono text-3xl md:text-xl font-extrabold text-[#121212] tracking-tight">
             No assignments yet
           </h2>
 
-          <p className="text-gray-500 text-base md:text-lg leading-relaxed mb-8">
+          <p className="text-gray-500 text-sm md:text-md leading-normal md:leading-relaxed mb-4">
             Create your first assignment to start collecting and grading student
             submissions. You can set up rubrics, define marking criteria, and
             let AI assist with grading.
@@ -410,7 +387,7 @@ export default function Home() {
                 "Assignment Creation Wizard coming in the next release!",
               )
             }
-            className="bg-[#121212] hover:bg-black text-white font-semibold py-4 px-8 rounded-full border-2 border-transparent hover:border-[#FF4F17] transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer"
+            className="bg-[#121212] hover:bg-black text-white font-light py-2 px-6 rounded-full border-2 border-transparent hover:border-[#FF4F17] transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer"
           >
             <svg
               className="w-5 h-5"
@@ -451,19 +428,23 @@ export default function Home() {
         {[
           {
             name: "Home",
-            icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
+            icon: "/icons/home.svg",
+          },
+          {
+            name: "My Groups",
+            icon: "/icons/grp.svg",
           },
           {
             name: "Assignments",
-            icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+            icon: "/icons/file-text.svg",
           },
           {
-            name: "Library",
-            icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
+            name: "AI Teacher's Toolkit",
+            icon: "/icons/book.svg",
           },
           {
-            name: "AI Toolkit",
-            icon: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z",
+            name: "My Library",
+            icon: "/icons/library.svg",
           },
         ].map((item) => (
           <button
@@ -479,19 +460,17 @@ export default function Home() {
             }}
             className="flex flex-col items-center gap-1.5 py-1 px-3 cursor-pointer"
           >
-            <svg
-              className={`w-5.5 h-5.5 ${activeTab.includes(item.name) ? "text-[#FF4F17]" : "text-gray-400"}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d={item.icon}
-              />
-            </svg>
+            <Image
+              src={item.icon}
+              width={22}
+              height={22}
+              alt={item.name}
+              className={`w-5.5 h-5.5 transition-all ${
+                activeTab.includes(item.name)
+                  ? "brightness-0 invert-[41%] sepia-[87%] saturate-[2250%] hue-rotate-[345deg] brightness-[101%] contrast-[101%]"
+                  : "opacity-40 invert brightness-0"
+              }`}
+            />
             <span
               className={`text-[10px] font-bold tracking-wide ${activeTab.includes(item.name) ? "text-[#FF4F17]" : "text-gray-500"}`}
             >
