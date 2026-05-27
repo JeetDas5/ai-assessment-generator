@@ -114,6 +114,7 @@ export default function Home() {
           setShowCreateWizard(false);
         }}
         onCreateClick={() => setShowCreateWizard(true)}
+        assignmentsCount={assignments.length}
         user={user}
       />
 
@@ -302,6 +303,7 @@ export default function Home() {
           <AssignmentsList
             assignments={assignments}
             onSelect={selectAssignment}
+            onCreateClick={() => setShowCreateWizard(true)}
           />
         ) : activeTab === "Assignments" ? (
           <div className="flex-1 flex flex-col items-center justify-center md:max-w-xl mx-auto text-center py-6">

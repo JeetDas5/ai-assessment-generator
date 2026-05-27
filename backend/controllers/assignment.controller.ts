@@ -101,3 +101,29 @@ export const getAssignments = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const deleteAssignment = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { id } = req.params;
+    if (!userId) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+    const assignment = await Assignment.findOneAndDelete({ _id: id, createdBy: userId });
+    if (!assignment) {
+      res.status(404).json({ success: false, message: "Assignment not found" });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      message: "Assignment deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete Assignment Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete assignment",
+    });
+  }
+};
+

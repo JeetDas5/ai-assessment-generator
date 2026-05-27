@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { upload } from "../middleware/upload.middleware";
-import { createAssignment, getAssignments } from "../controllers/assignment.controller";
+import { createAssignment, getAssignments, deleteAssignment } from "../controllers/assignment.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
 router.get("/", authMiddleware, getAssignments);
+router.delete("/:id", authMiddleware, deleteAssignment);
 
 router.post(
   "/create",

@@ -12,6 +12,7 @@ interface AssignmentStore {
   fetchAssignments: () => Promise<void>;
   selectAssignment: (assignment: any | null) => void;
   setShowCreateWizard: (show: boolean) => void;
+  deleteAssignment: (id: string) => Promise<boolean>;
   reset: () => void;
 }
 
@@ -62,6 +63,32 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
     set({ showCreateWizard: show });
     if (show) {
       set({ selectedAssignment: null }); // Deselect if starting form
+    }
+  },
+
+  deleteAssignment: async (id: string) => {
+    try {
+      const token = useAuthStore.getState().token || localStorage.getItem("veda_auth_token");
+      if (!token) return false;
+      
+      const response = await axios.delete(`${API_URL}/assignments/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data?.success) {
+        // Remove from list
+        set({ assignments: get().assignments.filter((a: any) => a._id !== id) });
+        // Deselect if active
+        if (get().selectedAssignment?._id === id) {
+          set({ selectedAssignment: null });
+        }
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Failed to delete assignment inside store:", error);
+      return false;
     }
   },
 

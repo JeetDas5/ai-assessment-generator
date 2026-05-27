@@ -7,6 +7,7 @@ interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onCreateClick: () => void;
+  assignmentsCount?: number;
   user: User | null;
 }
 
@@ -14,6 +15,7 @@ export default function Sidebar({
   activeTab,
   setActiveTab,
   onCreateClick,
+  assignmentsCount,
   user
 }: SidebarProps) {
   return (
@@ -75,22 +77,30 @@ export default function Sidebar({
             <button
               key={item.name}
               onClick={() => setActiveTab(item.name)}
-              className={`w-full flex items-center gap-4 px-5 py-2.5 rounded-2xl font-semibold text-base transition-all duration-200 cursor-pointer ${
+              className={`w-full flex items-center justify-between px-5 py-2.5 rounded-2xl font-semibold text-base transition-all duration-200 cursor-pointer ${
                 activeTab === item.name
                   ? "bg-[#F0F1F3] text-[#121212]"
                   : "text-gray-500 hover:bg-gray-50 hover:text-[#121212]"
               }`}
             >
-              <Image
-                src={item.icon}
-                width={20}
-                height={20}
-                alt={item.name}
-                className={`w-5 h-5 transition-all ${
-                  activeTab === item.name ? "brightness-0 opacity-100" : "opacity-60"
-                }`}
-              />
-              {item.name}
+              <div className="flex items-center gap-4">
+                <Image
+                  src={item.icon}
+                  width={20}
+                  height={20}
+                  alt={item.name}
+                  className={`w-5 h-5 transition-all ${
+                    activeTab === item.name ? "brightness-0 opacity-100" : "opacity-60"
+                  }`}
+                />
+                {item.name}
+              </div>
+              
+              {item.name === "Assignments" && typeof assignmentsCount === "number" && assignmentsCount > 0 && (
+                <span className="bg-[#FF4F17] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shrink-0 font-mono">
+                  {assignmentsCount}
+                </span>
+              )}
             </button>
           ))}
         </nav>
