@@ -17,7 +17,7 @@ export default function Sidebar({
   user
 }: SidebarProps) {
   return (
-    <aside className="hidden md:flex w-72 bg-white rounded-[2.5rem] shadow-sm p-6 flex-col justify-between border border-gray-100/50 select-none shrink-0">
+    <aside className="hidden md:flex w-72 bg-white rounded-[2.5rem] shadow-sm p-6 flex-col justify-between border border-gray-100/50 select-none shrink-0 print:hidden">
       <div className="space-y-8">
         <div className="flex items-center gap-1 z-10">
           <div className="w-12 h-12 relative translate-y-[8px]">

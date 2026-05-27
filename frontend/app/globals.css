@@ -19,3 +19,21 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), sans-serif;
 }
+
+@media print {
+  html, body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Reset all potential scroll/flex constraints so full question paper prints seamlessly */
+  main, div, section {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+

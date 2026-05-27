@@ -12,6 +12,7 @@ import Sidebar from "../components/Sidebar";
 import AssignmentWizard from "../components/AssignmentWizard";
 import AssignmentsList from "../components/AssignmentsList";
 import AssignmentDetails from "../components/AssignmentDetails";
+import { RefreshCcw } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
@@ -19,7 +20,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("Assignments");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  // Zustand Assignment Store Integration
   const {
     assignments,
     isFetchingAssignments,
@@ -27,7 +27,7 @@ export default function Home() {
     selectedAssignment,
     fetchAssignments,
     selectAssignment,
-    setShowCreateWizard
+    setShowCreateWizard,
   } = useAssignmentStore();
 
   useEffect(() => {
@@ -79,10 +79,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F0F1F3] flex flex-col md:flex-row p-0 md:p-6 gap-6 font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#F0F1F3] flex flex-col md:flex-row p-0 md:p-6 gap-6 font-sans relative overflow-x-hidden print:bg-white print:p-0 print:gap-0">
       <Toaster position="bottom-right" richColors />
 
-      {/* Sidebar Component */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={(tab) => {
@@ -95,7 +94,7 @@ export default function Home() {
       />
 
       {/* Mobile Top Navbar Header */}
-      <header className="md:hidden bg-white p-4 flex items-center justify-between border-b border-gray-100/50 shadow-sm rounded-b-[1.75rem] select-none z-20">
+      <header className="md:hidden bg-white p-4 flex items-center justify-between border-b border-gray-100/50 shadow-sm rounded-b-[1.75rem] select-none z-20 print:hidden">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 relative overflow-hidden">
             <Image
@@ -138,13 +137,11 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content Workspace Card */}
-      <main className="flex-1 bg-white rounded-4xl md:rounded-[2.5rem] shadow-sm flex flex-col overflow-hidden border border-gray-100/50 p-6 md:p-8 justify-between relative min-h-[calc(100vh-140px)] md:min-h-0">
-        
-        {/* Main Work Area Card Header */}
-        <div className="flex items-center justify-between border-b border-gray-50 md:pb-5 md:mb-6 flex-shrink-0">
+      <main className="flex-1 bg-white rounded-4xl md:rounded-[2.5rem] shadow-sm flex flex-col overflow-hidden border border-gray-100/50 p-6 md:p-8 justify-between relative min-h-[calc(100vh-140px)] md:min-h-0 print:shadow-none print:border-none print:p-0 print:overflow-visible print:bg-white print:min-h-0">
+    
+        <div className="flex items-center justify-between border-b border-gray-50 md:pb-5 md:mb-6 shrink-0 print:hidden">
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={() => {
                 if (showCreateWizard) {
                   setShowCreateWizard(false);
@@ -171,10 +168,10 @@ export default function Home() {
               </svg>
             </button>
             <h1 className="font-sans text-xl font-extrabold text-[#121212] tracking-tight">
-              {showCreateWizard 
-                ? "Assignment" 
-                : selectedAssignment 
-                  ? "Generated Paper" 
+              {showCreateWizard
+                ? "Assignment"
+                : selectedAssignment
+                  ? "Generated Paper"
                   : activeTab}
             </h1>
           </div>
@@ -182,15 +179,15 @@ export default function Home() {
           <div className="hidden md:flex items-center gap-4 relative">
             {!showCreateWizard && !selectedAssignment && (
               <>
-                <button 
+                <button
                   onClick={fetchAssignments}
                   disabled={isFetchingAssignments}
                   title="Refresh Assignments"
                   className="relative w-11 h-11 rounded-full bg-[#F0F1F3] flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-200/50 transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  <svg className={`w-5 h-5 ${isFetchingAssignments ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18" />
-                  </svg>
+                  <RefreshCcw
+                    className={`w-5 h-5 ${isFetchingAssignments ? "animate-spin" : ""}`}
+                  />
                 </button>
 
                 <button className="relative w-11 h-11 rounded-full bg-[#F0F1F3] flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-200/50 transition-colors cursor-pointer">
@@ -315,14 +312,14 @@ export default function Home() {
             }}
           />
         ) : selectedAssignment ? (
-          <AssignmentDetails 
+          <AssignmentDetails
             assignment={selectedAssignment}
             user={user}
             onBack={() => selectAssignment(null)}
           />
         ) : assignments.length > 0 ? (
-          <AssignmentsList 
-            assignments={assignments} 
+          <AssignmentsList
+            assignments={assignments}
             onSelect={selectAssignment}
           />
         ) : (
@@ -343,9 +340,9 @@ export default function Home() {
             </h2>
 
             <p className="text-gray-500 text-sm md:text-md leading-normal md:leading-relaxed mb-4">
-              Create your first assignment to start collecting and grading student
-              submissions. You can set up rubrics, define marking criteria, and
-              let AI assist with grading.
+              Create your first assignment to start collecting and grading
+              student submissions. You can set up rubrics, define marking
+              criteria, and let AI assist with grading.
             </p>
 
             <button
@@ -369,7 +366,7 @@ export default function Home() {
             </button>
           </div>
         )}
-        
+
         {/* Mobile floating action button */}
         {!showCreateWizard && !selectedAssignment && (
           <button
@@ -394,7 +391,7 @@ export default function Home() {
       </main>
 
       {/* Mobile Footer Bottom Nav */}
-      <footer className="md:hidden fixed bottom-0 left-0 right-0 bg-[#121212] p-3 border-t border-white/5 flex items-center justify-around z-20 rounded-t-[1.75rem] shadow-xl select-none">
+      <footer className="md:hidden fixed bottom-0 left-0 right-0 bg-[#121212] p-3 border-t border-white/5 flex items-center justify-around z-20 rounded-t-[1.75rem] shadow-xl select-none print:hidden">
         {[
           {
             name: "Home",
@@ -439,7 +436,7 @@ export default function Home() {
               alt={item.name}
               className={`w-5.5 h-5.5 transition-all ${
                 activeTab.includes(item.name)
-                  ? "brightness-0 invert-[41%] sepia-[87%] saturate-[2250%] hue-rotate-[345deg] brightness-[101%] contrast-[101%]"
+                  ? "brightness-0 invert-41 sepia-87 saturate-2250 hue-rotate-345 contrast-101"
                   : "opacity-40 invert brightness-0"
               }`}
             />
