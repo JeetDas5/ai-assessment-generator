@@ -33,6 +33,16 @@ export default function AssignmentWizard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [baseInstructions, setBaseInstructions] = useState("");
 
+  const [minDate, setMinDate] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    setMinDate(`${yyyy}-${mm}-${dd}`);
+  }, []);
+
   const {
     transcript,
     listening,
@@ -151,6 +161,16 @@ export default function AssignmentWizard({
     }
     if (!dueDate) {
       toast.error("Please select a due date!");
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [year, month, day] = dueDate.split("-").map(Number);
+    const selectedDueDate = new Date(year, month - 1, day);
+
+    if (selectedDueDate < today) {
+      toast.error("Due date cannot be before today!");
       return;
     }
     if (!selectedFile && !instructions.trim()) {
@@ -303,6 +323,7 @@ export default function AssignmentWizard({
           <input
             type="date"
             value={dueDate}
+            min={minDate}
             onChange={(e) => setDueDate(e.target.value)}
             className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-[#121212] focus:outline-none focus:ring-2 focus:ring-[#FF4F17]/20 focus:border-[#FF4F17] transition-all text-sm shadow-sm"
           />
