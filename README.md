@@ -77,7 +77,7 @@ powershell -c "irm bun.sh/install.ps1 | iex"
 ### 1. Configure Environment Variables
 Copy and configure environment variables in `/backend/.env`. Key keys required:
 - `PORT` (e.g. 5000)
-- `MONGODB_URI` (your MongoDB connection string)
+- `MONGO_URI` (your MongoDB connection string)
 - `REDIS_HOST` & `REDIS_PORT` (for BullMQ queue processing)
 - `OPENAI_API_KEY` (for AI question generation)
 - `JWT_SECRET` (for user sessions)
@@ -100,8 +100,4 @@ This uses `concurrently` to boot up:
 
 ---
 
-## Key NPM Scripts
-
-From the root directory, you can run:
-* `bun run dev` - Launch both frontend and backend concurrently in watch mode.
-* `bun run build` - Build the production bundle for the frontend application.
+Built with 💝 by [Jeet Das](https://github.com/JeetDas5) for Veda AI
