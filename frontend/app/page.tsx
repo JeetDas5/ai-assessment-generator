@@ -55,6 +55,23 @@ export default function Home() {
     }
   }, [isAuthenticated]);
 
+  // Real-time polling for queued/processing assignments
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const hasActiveJobs = assignments.some(
+      (a) => a.status === "queued" || a.status === "processing"
+    );
+
+    if (!hasActiveJobs) return;
+
+    const interval = setInterval(() => {
+      fetchAssignments();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [assignments, isAuthenticated, fetchAssignments]);
+
   const handleLogout = () => {
     logout();
     toast.success("Successfully logged out!");
