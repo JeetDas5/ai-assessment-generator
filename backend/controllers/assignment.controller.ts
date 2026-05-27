@@ -80,3 +80,25 @@ export const createAssignment = async (req: AuthRequest, res: Response) => {
     });
   }
 };
+
+export const getAssignments = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+    const assignments = await Assignment.find({ createdBy: userId }).sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      assignments,
+    });
+  } catch (error) {
+    console.error("Get Assignments Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch assignments",
+    });
+  }
+};
+

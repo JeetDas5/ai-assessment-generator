@@ -5,12 +5,45 @@ import { toast, Toaster } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "../store/useAuthStore";
+import axios from "axios";
+
+// Modular Components
+import Sidebar from "../components/Sidebar";
+import AssignmentWizard from "../components/AssignmentWizard";
+import AssignmentsList from "../components/AssignmentsList";
 
 export default function Home() {
   const router = useRouter();
   const { user, logout, isAuthenticated, initialize } = useAuthStore();
   const [activeTab, setActiveTab] = useState("Assignments");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // Assignment List & Fetching States
+  const [assignments, setAssignments] = useState<any[]>([]);
+  const [isFetchingAssignments, setIsFetchingAssignments] = useState(false);
+  const [showCreateWizard, setShowCreateWizard] = useState(false);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+  const fetchAssignments = async () => {
+    setIsFetchingAssignments(true);
+    try {
+      const token = useAuthStore.getState().token || localStorage.getItem("veda_auth_token");
+      if (!token) return;
+      const response = await axios.get(`${API_URL}/assignments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data?.success) {
+        setAssignments(response.data.assignments || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch assignments:", error);
+    } finally {
+      setIsFetchingAssignments(false);
+    }
+  };
 
   useEffect(() => {
     initialize();
@@ -31,20 +64,17 @@ export default function Home() {
     }
   }, [isAuthenticated, user, router]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchAssignments();
+    }
+  }, [isAuthenticated]);
+
   const handleLogout = () => {
     logout();
     toast.success("Successfully logged out!");
     router.push("/signin");
   };
-
-  const schoolInitials = user?.schoolName
-    ? user.schoolName
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .slice(0, 3)
-        .toUpperCase()
-    : "SCH";
 
   if (
     !isAuthenticated &&
@@ -67,121 +97,15 @@ export default function Home() {
     <div className="min-h-screen bg-[#F0F1F3] flex flex-col md:flex-row p-0 md:p-6 gap-6 font-sans relative overflow-x-hidden">
       <Toaster position="bottom-right" richColors />
 
-      <aside className="hidden md:flex w-72 bg-white rounded-[2.5rem] shadow-sm p-6 flex-col justify-between border border-gray-100/50 select-none">
-        <div className="space-y-8">
-          <div className="flex items-center gap-1 z-10">
-            <div className="w-12 h-12 relative translate-y-[8px]">
-              <Image
-                src="/logo.svg"
-                alt="Veda AI Logo"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <span className="font-mono text-2xl font-bold tracking-tight text-black select-none">
-              VedaAI
-            </span>
-          </div>
+      {/* Sidebar Component */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onCreateClick={() => setShowCreateWizard(true)}
+        user={user}
+      />
 
-          <button
-            onClick={() =>
-              toast.info(
-                "Create Assignment creation form implementation coming soon!",
-              )
-            }
-            className="w-full bg-[#1A1A1A] hover:bg-black text-white font-semibold py-2 px-4 rounded-full border-[2.5px] border-[#FF4F17] transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <Image
-              src="/icons/sparkle.svg"
-              width={20}
-              height={20}
-              alt="stars"
-            />
-            Create Assignment
-          </button>
-
-          <nav className="space-y-1">
-            {[
-              {
-                name: "Home",
-                icon: "/icons/home.svg",
-              },
-              {
-                name: "My Groups",
-                icon: "/icons/grp.svg",
-              },
-              {
-                name: "Assignments",
-                icon: "/icons/file-text.svg",
-              },
-              {
-                name: "AI Teacher's Toolkit",
-                icon: "/icons/book.svg",
-              },
-              {
-                name: "My Library",
-                icon: "/icons/library.svg",
-              },
-            ].map((item) => (
-              <button
-                key={item.name}
-                onClick={() => setActiveTab(item.name)}
-                className={`w-full flex items-center gap-4 px-5 py-2.5 rounded-2xl font-semibold text-base transition-all duration-200 cursor-pointer ${
-                  activeTab === item.name
-                    ? "bg-[#F0F1F3] text-[#121212]"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-[#121212]"
-                }`}
-              >
-                <Image
-                  src={item.icon}
-                  width={20}
-                  height={20}
-                  alt={item.name}
-                  className={`w-5 h-5 transition-all ${
-                    activeTab === item.name
-                      ? "brightness-0 opacity-100"
-                      : "opacity-60"
-                  }`}
-                />
-                {item.name}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        <div className="space-y-4 pt-6 border-t border-gray-100">
-          <button
-            onClick={() => toast.info("Settings interface coming soon!")}
-            className="w-full flex items-center gap-4 px-5 py-3 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 hover:text-[#121212] transition-all duration-200 cursor-pointer"
-          >
-            <Image
-              src="/icons/setting.svg"
-              width={20}
-              height={20}
-              alt="Settings"
-              className="w-5 h-5 opacity-60 hover:opacity-100 transition-all"
-            />
-            Settings
-          </button>
-
-          <div className="bg-[#F0F1F3] rounded-[1.75rem] p-4 flex items-center gap-3.5 border border-gray-200/20">
-            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm overflow-hidden flex items-center justify-center border border-gray-100 shrink-0">
-              <span className="font-mono font-extrabold text-[#FF4F17] text-lg">
-                {schoolInitials}
-              </span>
-            </div>
-            <div className="overflow-hidden">
-              <p className="font-bold text-[#121212] text-sm truncate leading-snug">
-                {user?.schoolName || "My School"}
-              </p>
-              <p className="text-gray-500 text-xs font-semibold truncate">
-                {user?.schoolAddress || "Institution"}
-              </p>
-            </div>
-          </div>
-        </div>
-      </aside>
+      {/* Mobile Top Navbar Header */}
       <header className="md:hidden bg-white p-4 flex items-center justify-between border-b border-gray-100/50 shadow-sm rounded-b-[1.75rem] select-none z-20">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 relative overflow-hidden">
@@ -225,10 +149,16 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Main Content Workspace Card */}
       <main className="flex-1 bg-white rounded-4xl md:rounded-[2.5rem] shadow-sm flex flex-col overflow-hidden border border-gray-100/50 p-6 md:p-8 justify-between relative min-h-[calc(100vh-140px)] md:min-h-0">
-        <div className="flex items-center justify-between border-b border-gray-50 md:pb-5 md:mb-6">
+        
+        {/* Main Work Area Card Header */}
+        <div className="flex items-center justify-between border-b border-gray-50 md:pb-5 md:mb-6 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <button className="w-10 h-10 rounded-full border border-gray-200/60 bg-white flex items-center justify-center text-gray-500 hover:text-[#121212] transition-colors cursor-pointer">
+            <button 
+              onClick={() => showCreateWizard ? setShowCreateWizard(false) : setActiveTab("Home")}
+              className="w-10 h-10 rounded-full border border-gray-200/60 bg-white flex items-center justify-center text-gray-500 hover:text-[#121212] transition-colors cursor-pointer"
+            >
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -244,27 +174,42 @@ export default function Home() {
               </svg>
             </button>
             <h1 className="font-sans text-xl font-extrabold text-[#121212]">
-              {activeTab}
+              {showCreateWizard ? "Assignment" : activeTab}
             </h1>
           </div>
 
           <div className="hidden md:flex items-center gap-4 relative">
-            <button className="relative w-11 h-11 rounded-full bg-[#F0F1F3] flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-200/50 transition-colors cursor-pointer">
-              <span className="absolute top-2.5 right-3.5 w-2 h-2 bg-[#FF4F17] rounded-full border border-white" />
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                />
-              </svg>
-            </button>
+            {!showCreateWizard && (
+              <>
+                <button 
+                  onClick={fetchAssignments}
+                  disabled={isFetchingAssignments}
+                  title="Refresh Assignments"
+                  className="relative w-11 h-11 rounded-full bg-[#F0F1F3] flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-200/50 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <svg className={`w-5 h-5 ${isFetchingAssignments ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18" />
+                  </svg>
+                </button>
+
+                <button className="relative w-11 h-11 rounded-full bg-[#F0F1F3] flex items-center justify-center text-gray-700 hover:text-black hover:bg-gray-200/50 transition-colors cursor-pointer">
+                  <span className="absolute top-2.5 right-3.5 w-2 h-2 bg-[#FF4F17] rounded-full border border-white" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                </button>
+              </>
+            )}
 
             <div className="relative">
               <button
@@ -359,38 +304,70 @@ export default function Home() {
           )}
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center md:max-w-xl mx-auto text-center py-6">
-          <div className="relative mb-8 max-w-[280px] w-full flex justify-center">
-            <Image
-              src="/icons/illustration.svg"
-              alt="No assignments illustration"
-              width={220}
-              height={220}
-              className="object-contain animate-pulse duration-4000"
-              priority
-            />
+        {/* Main Conditional View Block */}
+        {showCreateWizard ? (
+          <AssignmentWizard
+            onClose={() => setShowCreateWizard(false)}
+            onSuccess={() => {
+              setShowCreateWizard(false);
+              fetchAssignments();
+            }}
+          />
+        ) : assignments.length > 0 ? (
+          <AssignmentsList assignments={assignments} />
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center md:max-w-xl mx-auto text-center py-6">
+            <div className="relative mb-8 max-w-[280px] w-full flex justify-center">
+              <Image
+                src="/icons/illustration.svg"
+                alt="No assignments illustration"
+                width={220}
+                height={220}
+                className="object-contain animate-pulse duration-4000"
+                priority
+              />
+            </div>
+
+            <h2 className="font-mono text-3xl md:text-xl font-extrabold text-[#121212] tracking-tight">
+              No assignments yet
+            </h2>
+
+            <p className="text-gray-500 text-sm md:text-md leading-normal md:leading-relaxed mb-4">
+              Create your first assignment to start collecting and grading student
+              submissions. You can set up rubrics, define marking criteria, and
+              let AI assist with grading.
+            </p>
+
+            <button
+              onClick={() => setShowCreateWizard(true)}
+              className="bg-[#121212] hover:bg-black text-white font-light py-2 px-6 rounded-full border-2 border-transparent hover:border-[#FF4F17] transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Create Your First Assignment
+            </button>
           </div>
-
-          <h2 className="font-mono text-3xl md:text-xl font-extrabold text-[#121212] tracking-tight">
-            No assignments yet
-          </h2>
-
-          <p className="text-gray-500 text-sm md:text-md leading-normal md:leading-relaxed mb-4">
-            Create your first assignment to start collecting and grading student
-            submissions. You can set up rubrics, define marking criteria, and
-            let AI assist with grading.
-          </p>
-
+        )}
+        
+        {/* Mobile floating action button */}
+        {!showCreateWizard && (
           <button
-            onClick={() =>
-              toast.info(
-                "Assignment Creation Wizard coming in the next release!",
-              )
-            }
-            className="bg-[#121212] hover:bg-black text-white font-light py-2 px-6 rounded-full border-2 border-transparent hover:border-[#FF4F17] transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer"
+            onClick={() => setShowCreateWizard(true)}
+            className="md:hidden absolute bottom-6 right-6 w-14 h-14 rounded-full bg-[#121212] hover:bg-black text-white flex items-center justify-center shadow-lg border-2 border-[#FF4F17] cursor-pointer active:scale-95 transition-transform"
           >
             <svg
-              className="w-5 h-5"
+              className="w-6 h-6 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -402,28 +379,11 @@ export default function Home() {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Create Your First Assignment
           </button>
-        </div>
-        <button
-          onClick={() => toast.info("Add button pressed!")}
-          className="md:hidden absolute bottom-6 right-6 w-14 h-14 rounded-full bg-[#121212] hover:bg-black text-white flex items-center justify-center shadow-lg border-2 border-[#FF4F17] cursor-pointer active:scale-95 transition-transform"
-        >
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2.5"
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        </button>
+        )}
       </main>
+
+      {/* Mobile Footer Bottom Nav */}
       <footer className="md:hidden fixed bottom-0 left-0 right-0 bg-[#121212] p-3 border-t border-white/5 flex items-center justify-around z-20 rounded-t-[1.75rem] shadow-xl select-none">
         {[
           {
