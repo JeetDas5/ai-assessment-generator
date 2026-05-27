@@ -3,7 +3,7 @@ import { redisConnection } from "../config/redis";
 import Assignment from "../models/assignment.model";
 import { notifyAssignmentUpdate } from "../config/socket";
 import fs from "fs";
-import pdfParse from "pdf-parse";
+import { SmartPDFParser } from "pdf-parse-new";
 import { OpenAI } from "openai";
 
 if (!process.env.OPENAI_API_KEY) {
@@ -21,26 +21,24 @@ const worker = new Worker(
     console.log("Processing Assignment Generation:", assignmentId);
 
     try {
-      // Update status to processing
       await Assignment.findByIdAndUpdate(assignmentId, {
         status: "processing",
       });
       notifyAssignmentUpdate(assignmentId, "processing");
 
-      // Fetch the assignment details
       const assignment = await Assignment.findById(assignmentId);
       if (!assignment) {
         throw new Error(`Assignment with ID ${assignmentId} not found`);
       }
 
-      // Extract text content if a file was uploaded
       let textContent = "";
       if (assignment.uploadedFile) {
         console.log("Reading uploaded file:", assignment.uploadedFile);
         if (fs.existsSync(assignment.uploadedFile)) {
           if (assignment.uploadedFile.endsWith(".pdf")) {
             const dataBuffer = fs.readFileSync(assignment.uploadedFile);
-            const parsedData = await (pdfParse as any)(dataBuffer);
+            const parser = new SmartPDFParser();
+            const parsedData = await parser.parse(dataBuffer);
             textContent = parsedData.text;
             console.log(
               "PDF parsed successfully. Characters extracted:",
@@ -61,7 +59,6 @@ const worker = new Worker(
         }
       }
 
-      // Construct prompt for OpenAI
       const prompt = `You are an expert assessment creator. Your task is to generate a premium-quality structured question paper based on the following details.
 
 Assessment Details:
@@ -135,7 +132,6 @@ You must return a raw JSON object matching this schema:
         );
       }
 
-      // Update assignment status to completed
       await Assignment.findByIdAndUpdate(assignmentId, {
         status: "completed",
         generatedPaper: data.generatedPaper,

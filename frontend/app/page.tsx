@@ -55,7 +55,6 @@ export default function Home() {
     }
   }, [isAuthenticated]);
 
-  // Real-time polling for queued/processing assignments
   useEffect(() => {
     if (!isAuthenticated) return;
 
