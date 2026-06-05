@@ -1,6 +1,6 @@
-# AI Assessment Generator Monorepo
+# AI Assessment Generator
 
-Welcome to the AI Assessment Generator monorepo. This is a platform designed to dynamically generate and manage assignments, quizzes, and assessments using advanced Artificial Intelligence. It features a Next.js frontend, an Express.js backend with Redis-backed queue worker processing, and a shared packages layer.
+Welcome to the AI Assessment Generator. This is a platform designed to dynamically generate and manage assignments, quizzes, and assessments using advanced Artificial Intelligence. It features a Next.js frontend, an Express.js backend with Redis-backed queue worker processing, and a shared packages layer.
 
 ---
 
